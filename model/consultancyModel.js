@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const ConsultancySchema = new mongoose.Schema({
   tekiskyEmployeeNumber: { type: String, required: true },
@@ -11,9 +11,9 @@ const ConsultancySchema = new mongoose.Schema({
   degreePercentage: { type: Number, required: true },
   nameOfDegree: { type: String, required: true },
   yearOfPassing: { type: Number, required: true },
-  resumeUrl: { type: String, required: true }
+  resumeUrl: { type: String, required: true },
 });
 
-const Consultancy = mongoose.model('Consultancy', ConsultancySchema);
+const Consultancy = mongoose.model("Consultancy", ConsultancySchema);
 
-module.exports = Consultancy;
+export default Consultancy

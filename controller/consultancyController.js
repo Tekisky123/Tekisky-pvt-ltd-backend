@@ -1,11 +1,16 @@
-import Consultancy from './consultancyModel';
+
 import AWS from 'aws-sdk';
 import nodemailer from 'nodemailer';
+import Consultancy from '../model/consultancyModel.js';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Configure AWS S3
 const s3 = new AWS.S3({
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+    accessKeyId: process.env.AWSS_OPEN_KEY,
+    secretAccessKey: process.env.AWSS_SEC_KEY,
+    region: process.env.AWSS_REGION,
 });
 
 // Configure Nodemailer
@@ -23,8 +28,8 @@ const uploadResume = async (req, res) => {
 
     // Upload file to S3
     const uploadParams = {
-      Bucket: 'your-s3-bucket-name',
-      Key: file.originalname,
+      Bucket:  process.env.AWSS_BUCKET_NAME,
+      Key: `resume/${Date.now()}_${file.originalname}`,
       Body: file.buffer
     };
 
@@ -48,21 +53,43 @@ const uploadResume = async (req, res) => {
     // Save consultancy document to database
     await newConsultancy.save();
 
-    // Send confirmation email
     await transporter.sendMail({
-      from: 'tekiskymart920@gmail.com',
-      to: req.body.emailAddress,
-      subject: 'Resume Submission Confirmation',
-      text: `Your form has been submitted. Our dedicated team will review your submission and consider you for suitable positions within our company.`
-    });
+        from: 'tekiskymart920@gmail.com',
+        to: req.body.emailAddress,
+        subject: 'Resume Submission Confirmation',
+        html: `
+          <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <h1 style="color: #007bff; text-align: center;">Resume Submission Confirmation</h1>
+            <p>Dear ${req.body.fullName},</p>
+            <p>Thank you for submitting your resume to Tekisky Pvt Ltd. We appreciate your interest in exploring career opportunities with us.</p>
+            <p>Your resume has been successfully submitted to our database. Our team will review your profile and keep it on file for future reference.</p>
+            <p>Please note that if we have any requirements from other companies that match your profile, we may contact you for further discussion.</p>
+            <p>In the meantime, feel free to explore our <a href="https://www.tekisky.com">website</a> to learn more about Tekisky Pvt Ltd and the services we offer.</p>
+            <p>Thank you once again for considering Tekisky Pvt Ltd as a potential platform for your career growth.</p>
+            <div style="margin-top: 20px; text-align: right; font-style: italic; color: #777;">Best Regards,<br>The Recruitment Team<br>Tekisky Pvt Ltd</div>
+          </div>
+        `
+      });
+      
 
     // Send notification email
     await transporter.sendMail({
-      from: 'tekiskymart920@gmail.com',
-      to: 'notification@example.com',
-      subject: 'New Resume Uploaded',
-      text: `A new resume has been uploaded. Please check the S3 bucket.`
+        from: 'tekiskymart920@gmail.com',
+        to: 'tekiskymart920@gmail.com',
+        subject: 'New Resume Uploaded',
+        html: `
+          <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+            <h2 style="color: #007bff; text-align: center;">New Resume Uploaded</h2>
+            <p style="margin-bottom: 10px;"><strong>Student Name:</strong> ${req.body.fullName}</p>
+            <p style="margin-bottom: 10px;"><strong>Email:</strong> ${req.body.emailAddress}</p>
+            <p style="margin-bottom: 10px;"><strong>Mobile Number:</strong> ${req.body.mobileNumber}</p>
+            <p><strong>Resume Preview:</strong></p>
+            <p>Click <a href="${uploadResult.Location}" target="_blank">here</a> to view the resume.</p>
+          </div>
+        `
     });
+    
+    
 
     res.status(200).json({ message: 'Resume uploaded successfully' });
   } catch (error) {
