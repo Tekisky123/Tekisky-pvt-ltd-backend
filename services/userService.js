@@ -104,9 +104,10 @@ const hashPassword = async (password) => {
   return bcrypt.hash(password, saltRounds);
 };
 
-export const updateUserServiceById = async (_id, updateData) => {
+export const updateUserServiceById = async (userId, updateData) => {
     try {
-      console.log("Received data for update:", _id, updateData);
+      console.log(userId);
+      console.log("Received data for update:", userId, updateData);
   
       // Check if the updateData includes a password field
       if ("password" in updateData) {
@@ -115,7 +116,7 @@ export const updateUserServiceById = async (_id, updateData) => {
       }
   
       // Assuming User is a Mongoose model
-      const updatedUser = await UserModel.findByIdAndDelete(_id, updateData, {
+      const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
         new: true,
       });
   

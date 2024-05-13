@@ -74,7 +74,7 @@ export const getUsers = async (req, res) => {
 
 export const updateUserById = async (req, res) => {
   try {
-    const userId = req.params;
+    const userId = req.params.id;
     const updateData = req.body;
     console.log("req.bodyy", req.body);
 

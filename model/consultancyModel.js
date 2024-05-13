@@ -1,19 +1,24 @@
 import mongoose from "mongoose";
 
 const ConsultancySchema = new mongoose.Schema({
-  tekiskyEmployeeNumber: { type: String, required: true },
-  fullName: { type: String, required: true },
-  emailAddress: { type: String, required: true },
-  mobileNumber: { type: String, required: true },
-  tenthPercentage: { type: Number, required: true },
-  twelfthPercentage: { type: Number, required: true },
-  diplomaPercentage: { type: Number, required: true },
-  degreePercentage: { type: Number, required: true },
-  nameOfDegree: { type: String, required: true },
-  yearOfPassing: { type: Number, required: true },
-  resumeUrl: { type: String, required: true },
+  employeeNumber: { type: String },
+  fullName: { type: String },
+  email: { type: String },
+  mobileNumber: { type: String },
+  tenthPercentage: { type: Number },
+  twelthPercentage: { type: Number },
+  twelthCollegeName: { type: String },
+  diplomaPercentage: { type: Number },
+  degreePercentage: { type: Number },
+  diplomaCollegeName: { type: String },
+  degreeName: { type: String },
+  degreeCollegeName: { type: String },
+  yearOfPassing: { type: Number },
+  skills: { type: [String] },
+  yearsOfExperience: { type:String },
+  resumeUrl: { type: String },
 });
 
 const Consultancy = mongoose.model("Consultancy", ConsultancySchema);
 
-export default Consultancy
+export default Consultancy;
