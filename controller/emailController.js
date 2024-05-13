@@ -35,12 +35,46 @@ const sendFormDataEmail = (formData) => {
     from: "tekiskymart920@gmail.com",
     to: formData.email,
     subject: "Confirmation: Your Message Has Been Received",
-    text: `Dear ${formData.name},
-
-Thank you for contacting Tekisky Software Pvt Ltd. We have received your message and our team will contact you shortly.
-
-Best regards,
-Tekisky Software Pvt Ltd`,
+    html: `
+    <html>
+      <head>
+        <style>
+         
+          body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            padding: 20px;
+          }
+          .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+          }
+          h1 {
+            color: #333333;
+            text-align: center;
+          }
+          p {
+            color: #666666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+          }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <h1>Dear ${formData.name},</h1>
+          <p>Thank you for contacting Tekisky Pvt Ltd. We have received your message and our team will contact you shortly.</p>
+          <p>Your Mobile Number: ${formData.mobile}</p>
+          <p>We appreciate your interest in our services.</p>
+          <p>Best regards,<br/>Tekisky Pvt Ltd</p>
+        </div>
+      </body>
+    </html>
+  `,
   };
 
   // Send email to you
