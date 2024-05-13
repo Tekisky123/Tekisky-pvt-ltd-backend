@@ -36,44 +36,17 @@ const sendFormDataEmail = (formData) => {
     to: formData.email,
     subject: "Confirmation: Your Message Has Been Received",
     html: `
-    <html>
-      <head>
-        <style>
-         
-          body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
-          }
-          .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-          }
-          h1 {
-            color: #333333;
-            text-align: center;
-          }
-          p {
-            color: #666666;
-            line-height: 1.6;
-            margin-bottom: 20px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <h1>Dear ${formData.name},</h1>
-          <p>Thank you for contacting Tekisky Pvt Ltd. We have received your message and our team will contact you shortly.</p>
-          <p>Your Mobile Number: ${formData.mobile}</p>
-          <p>We appreciate your interest in our services.</p>
-          <p>Best regards,<br/>Tekisky Pvt Ltd</p>
-        </div>
-      </body>
-    </html>
+    <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+    <h1 style="color: #007bff; text-align: center; font-family: 'Arial', sans-serif;">Thank You for Reaching Out to Tekisky Pvt Ltd!</h1>
+    <p>Dear ${formData.name},</p>
+    <p>Thank you for taking the first step toward a brighter future with Tekisky Pvt Ltd. Your message has landed in our inbox like a beacon of opportunity, and we couldn't be more thrilled!</p>
+    <p>We've received your inquiry and our team is buzzing with excitement to connect with you. Rest assured, we'll be reaching out to you shortly to dive into the details and discuss the amazing possibilities ahead.</p>
+    <p>While you eagerly await our response, why not take a stroll through our <a href="https://tekisky.com" style="color: #007bff; text-decoration: none;">Tekisky Pvt Ltd website</a>? Discover more about our innovative solutions, passionate team, and the incredible projects that fuel our journey.</p>
+    <p>Once again, thank you for considering Tekisky Pvt Ltd as your partner in progress. We can't wait to embark on this exciting journey together!</p>
+    <div style="margin-top: 20px; text-align: right; font-style: italic; color: #777;">Warm Regards,<br>The Tekisky Talent Team<br>Tekisky Pvt Ltd</div>
+  </div>
+  
+  
   `,
   };
 

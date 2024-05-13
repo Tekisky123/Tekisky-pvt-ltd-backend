@@ -1,6 +1,7 @@
 import express from "express";
 import { getAllUploadResume, uploadResume } from "../controller/consultancyController.js";
 import multer from "multer";
+import authenticateToken from "../authentication/userAuth.js";
 
 const consultancyRoute = express.Router();
 
@@ -26,6 +27,6 @@ const upload = multer({
 });
 
 consultancyRoute.post('/uploadResume', upload.single('resume'), uploadResume);
-consultancyRoute.get('/getAllUploadResume', getAllUploadResume);
+consultancyRoute.get('/getAllUploadResume',authenticateToken, getAllUploadResume);
 
 export default consultancyRoute;
