@@ -103,7 +103,7 @@ const uploadResume = async (req, res) => {
 const getAllUploadResume = async (req, res) => {
   try {
     const consultancies = await Consultancy.find();
-    console.log(object);
+    // console.log(object);
     res.status(200).json(consultancies);
   } catch (error) {
     console.error(error);
