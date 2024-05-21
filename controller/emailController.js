@@ -1,4 +1,7 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const sendEmailController = (req, res) => {
   const { name, email, message, mobile } = req.body;
@@ -11,8 +14,8 @@ const sendEmailController = (req, res) => {
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "tekiskymart920@gmail.com",
-    pass: "unol ktol sndf viob",
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
@@ -20,7 +23,7 @@ const sendFormDataEmail = (formData) => {
   // Email to be sent to you (tekiskymart920@gmail.com)
   const mailOptionsToYou = {
     from: formData.email,
-    to: "tekiskymart920@gmail.com",
+    to: process.env.SMTP_USER,
     subject: "New Form Submission",
     text: `
       Name: ${formData.name}

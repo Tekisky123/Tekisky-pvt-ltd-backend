@@ -16,8 +16,8 @@ const s3 = new AWS.S3({
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: "tekiskymart920@gmail.com",
-    pass: "unol ktol sndf viob",
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
   },
 });
 
@@ -60,7 +60,7 @@ const uploadResume = async (req, res) => {
     await newConsultancy.save();
 
     await transporter.sendMail({
-      from: "tekiskymart920@gmail.com",
+      from: process.env.SMTP_USER,
       to: req.body.email,
       subject: "Resume Submission Confirmation",
       html: `
@@ -78,8 +78,8 @@ const uploadResume = async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: "tekiskymart920@gmail.com",
-      to: "tekiskymart920@gmail.com",
+      from: process.env.SMTP_USER,
+      to:  process.env.SMTP_USER,
       subject: "New Resume Uploaded",
       html: `
           <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
@@ -103,7 +103,6 @@ const uploadResume = async (req, res) => {
 const getAllUploadResume = async (req, res) => {
   try {
     const consultancies = await Consultancy.find();
-    // console.log(object);
     res.status(200).json(consultancies);
   } catch (error) {
     console.error(error);
