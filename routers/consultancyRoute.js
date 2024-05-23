@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllUploadResume, uploadResume } from "../controller/consultancyController.js";
+import { deleteUploadResume, getAllUploadResume, getOneUploadResume, getOneUploadResumeById, uploadResume } from "../controller/consultancyController.js";
 import multer from "multer";
 import authenticateToken from "../authentication/userAuth.js";
 
@@ -28,5 +28,10 @@ const upload = multer({
 
 consultancyRoute.post('/uploadResume', upload.single('resume'), uploadResume);
 consultancyRoute.get('/getAllUploadResume',authenticateToken, getAllUploadResume);
+consultancyRoute.post('/getoneuploadresumeandupdate/:id', getOneUploadResume);
+consultancyRoute.delete('/deleteoneuploadresume/:id', deleteUploadResume)
+consultancyRoute.get('/getoneuploadresume/:id', getOneUploadResumeById);
+
+
 
 export default consultancyRoute;
