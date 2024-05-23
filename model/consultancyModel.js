@@ -17,7 +17,7 @@ const ConsultancySchema = new mongoose.Schema({
   skills: { type: [String] },
   yearsOfExperience: { type:String },
   resumeUrl: { type: String },
-  interestedInMockInterview: {type: Boolean},
+  interestedInMockInterview: {type: Boolean,default: false},
   rating: { type: Number, enum: [1, 2, 3, 4, 5] },
   status: { type: String, default:'New', enum: ['Verified', 'New', 'Rejected', 'Mock Interview Done'] }, 
   comments: { type: String },

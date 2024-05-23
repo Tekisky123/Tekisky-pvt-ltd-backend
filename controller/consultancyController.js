@@ -51,6 +51,7 @@ const uploadResume = async (req, res) => {
       yearOfPassing: req.body.yearOfPassing,
       skills: req.body.skills,
       yearsOfExperience: req.body.yearsOfExperience,
+      interestedInMockInterview: req.body.interestedInMockInterview,
       resumeUrl: uploadResult.Location,
     });
 
