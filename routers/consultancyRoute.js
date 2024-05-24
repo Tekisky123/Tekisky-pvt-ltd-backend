@@ -28,8 +28,8 @@ const upload = multer({
 
 consultancyRoute.post('/uploadResume', upload.single('resume'), uploadResume);
 consultancyRoute.get('/getAllUploadResume',authenticateToken, getAllUploadResume);
-consultancyRoute.post('/getoneuploadresumeandupdate/:id', getOneUploadResume);
-consultancyRoute.delete('/deleteoneuploadresume/:id', deleteUploadResume)
+consultancyRoute.post('/getoneuploadresumeandupdate/:id',authenticateToken, getOneUploadResume);
+consultancyRoute.delete('/deleteoneuploadresume/:id',authenticateToken, deleteUploadResume)
 consultancyRoute.get('/getoneuploadresume/:id', getOneUploadResumeById);
 
 
