@@ -67,8 +67,8 @@ const uploadResume = async (req, res) => {
     });
 
     await newConsultancy.save();
-    console.log(newConsultancy);
-    console.log(newConsultancy._id);
+    // console.log(newConsultancy);
+    // console.log(newConsultancy._id);
     // console.log(object);
     const applicationLink = `${process.env.WEBSITE_URL}singleApplication/${newConsultancy._id}`;
 
@@ -142,7 +142,6 @@ const uploadResume = async (req, res) => {
               <tr>
                 <td class="header">
                   <a href="https://www.tekisky.com">
-                  <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" />
                   </a>
                 </td>
               </tr>
@@ -174,13 +173,6 @@ const uploadResume = async (req, res) => {
           </body>
         </html>
       `,
-      attachments: [
-        {
-          filename: "logo.jpg",
-          path: "./logo.jpg",
-          cid: "logo",
-        },
-      ],
     });
 
     await transporter.sendMail({
