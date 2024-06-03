@@ -142,6 +142,7 @@ const uploadResume = async (req, res) => {
               <tr>
                 <td class="header">
                   <a href="https://www.tekisky.com">
+                  <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" />
                   </a>
                 </td>
               </tr>
@@ -173,6 +174,13 @@ const uploadResume = async (req, res) => {
           </body>
         </html>
       `,
+      attachments: [
+        {
+          filename: "logo.jpg",
+          path: "../logo.jpg",
+          cid: "logo",
+        },
+      ],
     });
 
     await transporter.sendMail({
@@ -330,7 +338,7 @@ const sendStatusChangeEmail = async (consultancy) => {
       attachments: [
         {
           filename: "logo.jpg",
-          path: "./logo.jpg",
+          path: "../logo.jpg",
           cid: "logo",
         },
       ],
@@ -445,7 +453,7 @@ const assignAssessment = async (req, res) => {
       attachments: [
         {
           filename: "logo.jpg",
-          path: "./logo.jpg",
+          path: "../logo.jpg",
           cid: "logo",
         },
       ],
@@ -529,7 +537,7 @@ const submitAssessment = async (req, res) => {
         attachments: [
           {
             filename: "logo.jpg",
-            path: "./logo.jpg",
+            path: "../logo.jpg",
             cid: "logo",
           },
         ],
