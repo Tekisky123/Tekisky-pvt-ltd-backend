@@ -142,13 +142,13 @@ const uploadResume = async (req, res) => {
               <tr>
                 <td class="header">
                   <a href="https://www.tekisky.com">
-                  <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" />
+                  <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
                   </a>
                 </td>
               </tr>
               <tr>
                 <td class="content">
-                  <h1 style="color: #007bff; text-align: center;">Resume Submission Confirmation</h1>
+                  <h4 style="color: #007bff; text-align: center;">Resume Submission Confirmation</h4>
                   <p>Dear ${req.body.fullName},</p>
                   <p>Thank you for submitting your resume to Tekisky Pvt Ltd. We appreciate your interest in exploring career opportunities with us.</p>
                   <p>Your resume has been successfully submitted to our database. Our team will review your profile and keep it on file for future reference.</p>
@@ -174,13 +174,6 @@ const uploadResume = async (req, res) => {
           </body>
         </html>
       `,
-      attachments: [
-        {
-          filename: "logo.jpg",
-          path: "../logo.jpg",
-          cid: "logo",
-        },
-      ],
     });
 
     await transporter.sendMail({
@@ -189,6 +182,11 @@ const uploadResume = async (req, res) => {
       subject: "📥 New Resume Uploaded: Review Now! 📝",
       html: `
           <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+         
+                  <a href="https://www.tekisky.com">
+                  <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+                  </a>
+               
             <h2 style="color: #007bff; text-align: center;">New Resume Uploaded</h2>
             <p style="margin-bottom: 10px;"><strong>Student Name:</strong> ${req.body.fullName}</p>
             <p style="margin-bottom: 10px;"><strong>Email:</strong> ${req.body.email}</p>
@@ -273,9 +271,10 @@ const sendStatusChangeEmail = async (consultancy) => {
   try {
     let emailContent = `
     <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #f7f7f7; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-  <div style="text-align: center; margin-bottom: 20px;">
-    <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" style="max-width: 200px; height: auto; border-radius: 8px;">
-  </div>
+    <a href="https://www.tekisky.com">
+    <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+    </a>
+  
   <h2 style="color: #007bff; text-align: center; margin-bottom: 20px;"> Change in Your Application Status</h2>
   <p style="margin-bottom: 10px;">Dear ${consultancy.fullName},</p>
   <p>We are writing to inform you about an important update regarding your application at Tekisky Pvt Ltd.</p>
@@ -303,10 +302,11 @@ const sendStatusChangeEmail = async (consultancy) => {
       consultancy.mockInterviewFeedback
     ) {
       emailContent += `
-      <div style="text-align: center; margin-top: 20px;">
-  <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" style="max-width: 200px; height: auto; border-radius: 8px;">
-</div>
+      <a href="https://www.tekisky.com">
+      <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+      </a>
 <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #f7f7f7; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+
   <h2 style="color: #007bff; text-align: center; margin-bottom: 20px;">Review Your Mock Interview Feedback</h2>
   <p style="margin-bottom: 10px;">Hello <strong>${consultancy.fullName}</strong>,</p>
   <p>We're pleased to share with you the feedback from your recent mock interview. This valuable insight has been tailored to help you grow and refine your interview skills.</p>
@@ -335,13 +335,6 @@ const sendStatusChangeEmail = async (consultancy) => {
       subject:
         "Exciting Update: Your Application Status & Mock Interview Feedback!",
       html: emailContent,
-      attachments: [
-        {
-          filename: "logo.jpg",
-          path: "../logo.jpg",
-          cid: "logo",
-        },
-      ],
     });
   } catch (error) {
     console.error("Oops! Error sending status change email:", error);
@@ -421,7 +414,9 @@ const assignAssessment = async (req, res) => {
       subject: "Assessment Assignment",
       html: `
       <div style="text-align: center; margin-top: 20px;">
-  <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" style="max-width: 200px; height: auto; border-radius: 8px;">
+      <a href="https://www.tekisky.com">
+      <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+      </a>
 </div>
         <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
           <h2 style="color: #007bff; text-align: center;">Assessment Assigned</h2>
@@ -450,13 +445,6 @@ const assignAssessment = async (req, res) => {
 </table>
         </div>
       `,
-      attachments: [
-        {
-          filename: "logo.jpg",
-          path: "../logo.jpg",
-          cid: "logo",
-        },
-      ],
     });
 
     res.status(200).json({ message: "Assessment assigned successfully" });
@@ -519,7 +507,9 @@ const submitAssessment = async (req, res) => {
         subject: "Assessment Submission Confirmation",
         html: `
           <div style="text-align: center; margin-top: 20px;">
-            <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" style="max-width: 200px; height: auto; border-radius: 8px;">
+          <a href="https://www.tekisky.com">
+          <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+          </a>
           </div>
           <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
             <h2 style="color: #007bff; text-align: center;">Assessment Submitted</h2>
@@ -534,13 +524,6 @@ const submitAssessment = async (req, res) => {
             <p>Phone: <a href="tel:+918625817334" style="color: #007bff; text-decoration: none;">+91 8625817334</a></p>
           </div>
         `,
-        attachments: [
-          {
-            filename: "logo.jpg",
-            path: "../logo.jpg",
-            cid: "logo",
-          },
-        ],
       });
     } catch (emailError) {
       console.error("Error sending email to consultancy:", emailError);
@@ -554,6 +537,9 @@ const submitAssessment = async (req, res) => {
         subject: `Assessment Submission from ${consultancy.fullName}`,
         html: `
           <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
+          <a href="https://www.tekisky.com">
+          <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
+          </a>
             <h2 style="color: #007bff; text-align: center;">Assessment Submission</h2>
             <p>Dear Admin,</p>
             <p>The following student has submitted their assessment:</p>
@@ -583,8 +569,6 @@ const submitAssessment = async (req, res) => {
     res.status(500).json({ error: "Failed to submit assessment" });
   }
 };
-
-
 
 export {
   uploadResume,
