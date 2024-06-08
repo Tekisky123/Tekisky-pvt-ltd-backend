@@ -547,7 +547,7 @@ const submitAssessment = async (req, res) => {
             <p><strong>Email:</strong> ${consultancy.email}</p>
             <p><strong>Employee Number:</strong> ${consultancy.employeeNumber}</p>
             <p>Please review the assessment at the following link:</p>
-            <p><a href="${uploadResult.Location}" target="_blank">View Assessment</a></p>
+            <p><a href="${uploadResult.Location}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;" target="_blank">View Assessment</a></p>
             <div style="margin-top: 30px;">
               <h3 style="color: #007bff; margin-bottom: 15px;">Assessment Details:</h3>
               <p><strong>Assessment Category:</strong> ${consultancy.selectedAssessmentCategory}</p>
