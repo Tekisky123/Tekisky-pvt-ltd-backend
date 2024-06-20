@@ -125,11 +125,7 @@ const sendFormDataEmail = (formData) => {
             <tr>
               <td class="header">
                 <a href="https://tekisky.com">
-<<<<<<< HEAD
                 
-=======
-               <h2>Tekisky pvt ltd</h2>
->>>>>>> 80f8bdc507b63628901beb8120a3d37a52848fc6
                 </a>
               </td>
             </tr>
@@ -180,10 +176,6 @@ const sendFormDataEmail = (formData) => {
         </body>
         </html>
       `,
-<<<<<<< HEAD
-=======
-     
->>>>>>> 80f8bdc507b63628901beb8120a3d37a52848fc6
     };
 
     // Send email to you
