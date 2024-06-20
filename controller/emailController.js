@@ -125,7 +125,7 @@ const sendFormDataEmail = (formData) => {
             <tr>
               <td class="header">
                 <a href="https://tekisky.com">
-                <img src="cid:logo" alt="Tekisky Pvt Ltd Logo" />
+                
                 </a>
               </td>
             </tr>
@@ -162,6 +162,7 @@ const sendFormDataEmail = (formData) => {
   <tr>
     <td class="footer" style="text-align: end;">
       Best Regards,<br>
+      
       The Recruitment Team<br>
       Tekisky Pvt Ltd <br>
       <a href="mailto:hr@tekisky.com">hr@tekisky.com</a><br>
@@ -175,13 +176,6 @@ const sendFormDataEmail = (formData) => {
         </body>
         </html>
       `,
-      attachments: [
-        {
-          filename: "logo.jpg",
-          path: "./logo.jpg",
-          cid: "logo",
-        },
-      ],
     };
 
     // Send email to you
