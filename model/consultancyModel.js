@@ -27,6 +27,8 @@ const ConsultancySchema = new mongoose.Schema(
     englishWriting: { type: String },
     workStatus: { type: String },
     rating: { type: Number, enum: [1, 2, 3, 4, 5] },
+    communicationSkillRating: { type: Number, enum: [1, 2, 3, 4, 5] },
+    technicalRoundComments: { type: String },
     comments: { type: String },
     status: {
       type: String,
