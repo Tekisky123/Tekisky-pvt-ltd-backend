@@ -1,10 +1,6 @@
-import {
-  createUserService,
-  deleteUserService,
-  getUsersService,
-  loginService,
-  updateUserServiceById,
-} from "../services/userService.js";
+import Consultancy from "../model/consultancyModel.js";
+import UserModel from "../model/userModel.js";
+import { createUserService, deleteUserService, getUsersService, loginService, updateUserServiceById } from "../services/userService.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -42,11 +38,15 @@ export const loginUser = async (req, res) => {
     const result = await loginService(loginData);
 
     if (result.success) {
+      const { token, user, userType, collegeName } = result;
+
       res.status(200).json({
         success: true,
         message: result.message,
-        token: result.token,
-        user: result.user,
+        token,
+        user,
+        userType,
+        collegeName,
       });
     } else {
       res.status(401).json({ error: result.error });
@@ -110,5 +110,36 @@ export const deleteUser = async (req, res) => {
   } catch (error) {
     console.error("Error deleting user:", error);
     res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
+};
+
+export const getTeacherConsultancyApplications = async (req, res) => {
+  try {
+    const userId = req.params.userId; // Fetch userId from URL parameter
+
+    // Check if the user exists
+    const user = await UserModel.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if the user is a teacher
+    if (user.userType !== 'teacher') {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Fetch applications where referedBy matches collegeName
+    const collegeName = user.collegeName;
+    console.log(`Fetching applications for collegeName: ${collegeName}`);
+
+    const applications = await Consultancy.find({ referredBy: collegeName });
+
+    console.log(`Found ${applications.length} applications`);
+
+    res.status(200).json({ success: true, applications });
+  } catch (error) {
+    console.error("Error fetching consultancy applications for teacher:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };

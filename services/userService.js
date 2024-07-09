@@ -1,45 +1,36 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserModel from "../model/userModel.js";
-import crypto from 'crypto'; // Import crypto module for generating new secret key
-
-
 
 export const createUserService = async (userData) => {
   try {
-    const { password, ...userDetails } = userData;
+    const { password, userType, collegeName, ...userDetails } = userData;
 
     // Validate user data
-    if (
-      !userDetails.mobileNumber ||
-      !userDetails.email ||
-      !password 
-    ) {
+    if (!userDetails.mobileNumber || !userDetails.email || !password || !userType) {
       throw new Error("Missing required fields");
     }
 
     // Check if the mobile number or email is already taken
     const existingUser = await UserModel.findOne({
-      $or: [
-        { mobileNumber: userDetails.mobileNumber },
-        { email: userDetails.email },
-      ],
+      $or: [{ mobileNumber: userDetails.mobileNumber }, { email: userDetails.email }],
     });
     if (existingUser) {
       throw new Error("Mobile number or email is already taken");
     }
 
-    // Hashing password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create and save the user in one step using create
-    const user = new UserModel({
+    const newUser = new UserModel({
       ...userDetails,
       password: hashedPassword,
+      userType,
+      collegeName: userType === 'teacher' ? collegeName : undefined,
     });
-    await user.save();
 
-    return { success: true, message: "User created successfully", user: user };
+    await newUser.save();
+
+    return { success: true, message: "User created successfully", user: newUser };
   } catch (error) {
     console.error("Error creating user:", error);
     return { success: false, error: error.message || "Internal Server Error" };
@@ -47,8 +38,6 @@ export const createUserService = async (userData) => {
 };
 
 export const loginService = async (loginData) => {
-
-    
   try {
     const { mobileNumber, password } = loginData;
 
@@ -72,14 +61,28 @@ export const loginService = async (loginData) => {
       throw new Error("Invalid mobile number or password");
     }
 
-
-
     // Generate a JWT token
-    const token = jwt.sign({ userId: mobileNumber }, process.env.JWT_SECRET_KEY, {
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
       expiresIn: "1d",
     });
 
-    return { success: true, message: "Login successful", token, user };
+    // Include userType and collegeName in the response
+    const { userType, collegeName } = user;
+
+    return {
+      success: true,
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        mobileNumber: user.mobileNumber,
+        email: user.email,
+        userType,
+        collegeName,
+      },
+      userType,
+      collegeName,
+    };
   } catch (error) {
     console.error("Error during login:", error);
     return { success: false, error: error.message || "Internal Server Error" };
@@ -97,53 +100,39 @@ export const getUsersService = async () => {
     return { success: false, error: "Internal Server Error" };
   }
 };
-// userService.js
-
-const hashPassword = async (password) => {
-  const saltRounds = 10;
-  return bcrypt.hash(password, saltRounds);
-};
 
 export const updateUserServiceById = async (userId, updateData) => {
-    try {
-      console.log(userId);
-      console.log("Received data for update:", userId, updateData);
-  
-      // Check if the updateData includes a password field
-      if ("password" in updateData) {
-        // Handle password update separately
-        updateData.password = await hashPassword(updateData.password);
-      }
-  
-      // Assuming User is a Mongoose model
-      const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
-        new: true,
-      });
-  
-      console.log("Updated user:", updatedUser);
-  
-      if (!updatedUser) {
-        return { success: false, error: "User not found", updatedUser };
-      }
-  
-      return { success: true, updatedUser };
-    } catch (error) {
-      console.error("Error updating user:", error);
-      return { success: false, error: error.message || "Error updating user" };
+  try {
+    // Check if the updateData includes a password field
+    if ("password" in updateData) {
+      // Handle password update separately
+      updateData.password = await bcrypt.hash(updateData.password, 10);
     }
-  };
-  
+
+    // Find and update user by userId
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, { new: true });
+
+    if (!updatedUser) {
+      return { success: false, error: "User not found", updatedUser };
+    }
+
+    return { success: true, updatedUser };
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return { success: false, error: error.message || "Error updating user" };
+  }
+};
 
 export const deleteUserService = async (userId) => {
   try {
     // Delete user in the database based on userId
-    const deletedUser = await UserModel.findByIdAndDelete({ _id: userId });
+    const deletedUser = await UserModel.findByIdAndDelete(userId);
 
     if (!deletedUser) {
       throw new Error("User not found");
     }
 
-    return true;
+    return { success: true, message: "User deleted successfully" };
   } catch (error) {
     console.error("Error deleting user:", error);
     return { success: false, error: error.message || "Internal Server Error" };
