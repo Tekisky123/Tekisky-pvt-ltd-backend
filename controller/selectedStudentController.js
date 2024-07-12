@@ -46,7 +46,7 @@ export const updateSelectedStudent = async (req, res) => {
     const updatedStudent = await selectedStudent.findByIdAndUpdate(
       req.params.id,
       req.body,
-    
+
       { new: true }
     );
     if (!updatedStudent) {

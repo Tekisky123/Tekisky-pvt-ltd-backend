@@ -1,6 +1,12 @@
 import Consultancy from "../model/consultancyModel.js";
 import UserModel from "../model/userModel.js";
-import { createUserService, deleteUserService, getUsersService, loginService, updateUserServiceById } from "../services/userService.js";
+import {
+  createUserService,
+  deleteUserService,
+  getUsersService,
+  loginService,
+  updateUserServiceById,
+} from "../services/userService.js";
 
 export const createUser = async (req, res) => {
   try {
@@ -125,8 +131,8 @@ export const getTeacherConsultancyApplications = async (req, res) => {
     }
 
     // Check if the user is a teacher
-    if (user.userType !== 'teacher') {
-      return res.status(403).json({ error: 'Access denied' });
+    if (user.userType !== "teacher") {
+      return res.status(403).json({ error: "Access denied" });
     }
 
     // Fetch applications where referedBy matches collegeName
@@ -139,7 +145,10 @@ export const getTeacherConsultancyApplications = async (req, res) => {
 
     res.status(200).json({ success: true, applications });
   } catch (error) {
-    console.error("Error fetching consultancy applications for teacher:", error);
+    console.error(
+      "Error fetching consultancy applications for teacher:",
+      error
+    );
     res.status(500).json({ error: "Internal Server Error" });
   }
 };

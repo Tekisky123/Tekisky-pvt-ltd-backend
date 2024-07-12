@@ -238,7 +238,7 @@ const getOneUploadResume = async (req, res) => {
       mockInterviewResponse,
       mockInterviewFeedback,
       communicationSkillRating,
-      technicalRoundComments
+      technicalRoundComments,
     } = req.body;
 
     const updatedConsultancy = await Consultancy.findByIdAndUpdate(
@@ -250,7 +250,7 @@ const getOneUploadResume = async (req, res) => {
         mockInterviewResponse,
         mockInterviewFeedback,
         communicationSkillRating,
-        technicalRoundComments
+        technicalRoundComments,
       },
       { new: true }
     );

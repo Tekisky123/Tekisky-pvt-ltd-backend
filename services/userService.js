@@ -7,13 +7,21 @@ export const createUserService = async (userData) => {
     const { password, userType, collegeName, ...userDetails } = userData;
 
     // Validate user data
-    if (!userDetails.mobileNumber || !userDetails.email || !password || !userType) {
+    if (
+      !userDetails.mobileNumber ||
+      !userDetails.email ||
+      !password ||
+      !userType
+    ) {
       throw new Error("Missing required fields");
     }
 
     // Check if the mobile number or email is already taken
     const existingUser = await UserModel.findOne({
-      $or: [{ mobileNumber: userDetails.mobileNumber }, { email: userDetails.email }],
+      $or: [
+        { mobileNumber: userDetails.mobileNumber },
+        { email: userDetails.email },
+      ],
     });
     if (existingUser) {
       throw new Error("Mobile number or email is already taken");
@@ -25,12 +33,16 @@ export const createUserService = async (userData) => {
       ...userDetails,
       password: hashedPassword,
       userType,
-      collegeName: userType === 'teacher' ? collegeName : undefined,
+      collegeName: userType === "teacher" ? collegeName : undefined,
     });
 
     await newUser.save();
 
-    return { success: true, message: "User created successfully", user: newUser };
+    return {
+      success: true,
+      message: "User created successfully",
+      user: newUser,
+    };
   } catch (error) {
     console.error("Error creating user:", error);
     return { success: false, error: error.message || "Internal Server Error" };
@@ -110,7 +122,9 @@ export const updateUserServiceById = async (userId, updateData) => {
     }
 
     // Find and update user by userId
-    const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, { new: true });
+    const updatedUser = await UserModel.findByIdAndUpdate(userId, updateData, {
+      new: true,
+    });
 
     if (!updatedUser) {
       return { success: false, error: "User not found", updatedUser };

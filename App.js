@@ -32,8 +32,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use("/email", sendEmailRoute);
 app.use("/selectedStudent", selectedStudentRoute);
-app.use("/user", userRoute)
-app.use("/consultancy",consultancyRoute);
+app.use("/user", userRoute);
+app.use("/consultancy", consultancyRoute);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
