@@ -44,7 +44,7 @@ const sendFormDataEmail = (formData) => {
 
     // Email to be sent to the user
     const mailOptionsToUser = {
-      from: "tekiskymart920@gmail.com",
+      from: process.env.SMTP_USER,
       to: formData.email,
       subject: "Confirmation: Your Message Has Been Received",
       html: `
