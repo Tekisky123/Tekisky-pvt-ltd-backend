@@ -138,7 +138,7 @@ const sendFormDataEmail = (formData) => {
             </div>
             <div class="footer">
               <p>
-                Tekisky Pvt Ltd, 1234 Street Name, City, State, 56789<br/>
+                Tekisky Pvt Ltd, Workshop Corner, Nanded, Maharashtra, 431605<br/>
                 <a href="mailto:hr@tekisky.com">support@tekisky.com</a> | <a href="tel:+918625817334">+91 8625817334</a>
               </p>
               <p>
