@@ -29,7 +29,6 @@ const transporter = nodemailer.createTransport({
 
 const sendFormDataEmail = (formData) => {
   return new Promise((resolve, reject) => {
-    // Email to be sent to you (tekiskymart920@gmail.com)
     const mailOptionsToYou = {
       from: formData.email,
       to: process.env.SMTP_USER,
@@ -117,7 +116,7 @@ const sendFormDataEmail = (formData) => {
           <div class="container">
             <div class="header">
               <a href="https://tekisky.com">
-                <img src="https://tekisky.com/logo.png" alt="Tekisky Pvt Ltd">
+                <img src="https://tekisky.com/assets/WhatsApp_Image_2024-04-30_at_12.39.09_86de1ffc-removebg-preview-2SydUlQw.png" alt="Tekisky Pvt Ltd">
               </a>
             </div>
             <div class="content">
@@ -140,7 +139,7 @@ const sendFormDataEmail = (formData) => {
             <div class="footer">
               <p>
                 Tekisky Pvt Ltd, 1234 Street Name, City, State, 56789<br/>
-                <a href="mailto:support@tekisky.com">support@tekisky.com</a> | <a href="tel:+918625817334">+91 8625817334</a>
+                <a href="mailto:hr@tekisky.com">support@tekisky.com</a> | <a href="tel:+918625817334">+91 8625817334</a>
               </p>
               <p>
                 This email was sent to you because you recently submitted a contact form on our website. If you believe this was a mistake, please ignore this email.
