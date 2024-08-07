@@ -11,8 +11,9 @@ import authenticateToken from "../authentication/userAuth.js";
 
 const userRoute = express.Router();
 
-userRoute.post("/create", authenticateToken, createUser);
 userRoute.post("/login", loginUser);
+
+userRoute.post("/create", authenticateToken, createUser);
 userRoute.get("/getAllUsers", authenticateToken, getUsers);
 userRoute.put("/update/:id", authenticateToken, updateUserById);
 userRoute.delete("/delete/:id", authenticateToken, deleteUser);

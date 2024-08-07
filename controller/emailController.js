@@ -72,7 +72,7 @@ const sendFormDataEmail = (formData) => {
             .header {
               text-align: center;
               padding: 20px 0;
-              background-color: #f4f4f4;
+              background-color: #ffffff;
               border-bottom: 1px solid #e0e0e0;
             }
             .header img {
@@ -126,7 +126,7 @@ const sendFormDataEmail = (formData) => {
                 Thank you for reaching out to Tekisky Pvt Ltd. We have received your message and our team will get back to you shortly.
               </p>
               <p>
-                If you have any additional questions or need immediate assistance, feel free to contact us directly at <a href="mailto:hr@tekisky.com">support@tekisky.com</a>.
+                If you have any additional questions or need immediate assistance, feel free to contact us directly at <a href="mailto:hr@tekisky.com">support@tekisky.com or  <a href="tel:+918625817334">+91 8625817334</a>.
               </p>
               <p>
                 In the meantime, you can explore our website to learn more about our services and offerings.
