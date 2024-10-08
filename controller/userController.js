@@ -7,6 +7,7 @@ import {
   loginService,
   updateUserServiceById,
 } from "../services/userService.js";
+import CryptoJS from "crypto-js";
 
 export const createUser = async (req, res) => {
   try {
@@ -39,27 +40,24 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const loginData = req.body;
+    const secretKey = "test";
+    const decryptedDataBytes = CryptoJS.AES.decrypt(req.body.data, secretKey);
+    const decryptedData = JSON.parse(
+      decryptedDataBytes.toString(CryptoJS.enc.Utf8)
+    );
+
+    const loginData = decryptedData;
 
     const result = await loginService(loginData);
 
     if (result.success) {
-      const { token, user, userType, collegeName } = result;
-
-      res.status(200).json({
-        success: true,
-        message: result.message,
-        token,
-        user,
-        userType,
-        collegeName,
-      });
+      res.status(200).json(result);
     } else {
-      res.status(401).json({ error: result.error });
+      res.status(401).json({ message: "Invalid credentials" });
     }
   } catch (error) {
     console.error("Error during login:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

@@ -40,7 +40,6 @@ const sendFormDataEmail = (formData) => {
         Message: ${formData.message}
       `,
     };
-
     // Email to be sent to the user
     const mailOptionsToUser = {
       from: process.env.SMTP_USER,

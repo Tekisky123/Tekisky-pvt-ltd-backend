@@ -223,7 +223,7 @@ const getAllUploadResume = async (req, res) => {
     const consultancies = await Consultancy.find();
     res.status(200).json(consultancies);
   } catch (error) {
-    console.error(error);
+    console.log(error);
     res.status(500).json({ error: "Failed to fetch resumes" });
   }
 };
