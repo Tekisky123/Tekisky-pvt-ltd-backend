@@ -2,6 +2,8 @@ import AWS from "aws-sdk";
 import nodemailer from "nodemailer";
 import Consultancy from "../model/consultancyModel.js";
 import dotenv from "dotenv";
+import fs from "fs";
+import path from "path";
 
 dotenv.config();
 
@@ -24,197 +26,179 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+// Resilient file storage: attempts AWS S3, falls back to local disk if S3 fails
+const saveResumeFile = async (file, fullName) => {
+  if (!file) return "";
+
+  const sanitizedName = (fullName || "candidate")
+    .replace(/[^a-zA-Z0-9]/g, "_")
+    .slice(0, 40);
+  const originalCleanName = file.originalname.replace(/[^a-zA-Z0-9._-]/g, "_");
+  const fileName = `${sanitizedName}_${Date.now()}_${originalCleanName}`;
+
+  // Try S3 first if configured
+  if (
+    process.env.AWSS_BUCKET_NAME &&
+    process.env.AWSS_OPEN_KEY &&
+    process.env.AWSS_SEC_KEY
+  ) {
+    try {
+      const uploadParams = {
+        Bucket: process.env.AWSS_BUCKET_NAME,
+        Key: `resume/${fileName}`,
+        Body: file.buffer,
+      };
+      const uploadResult = await s3.upload(uploadParams).promise();
+      if (uploadResult && uploadResult.Location) {
+        return uploadResult.Location;
+      }
+    } catch (s3Error) {
+      console.warn(
+        "AWS S3 upload failed; safely falling back to local file storage:",
+        s3Error.message
+      );
+    }
+  }
+
+  // Fallback to local server disk storage
+  try {
+    const uploadDir = path.join(process.cwd(), "uploads", "resumes");
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+    const filePath = path.join(uploadDir, fileName);
+    fs.writeFileSync(filePath, file.buffer);
+    return `/uploads/resumes/${fileName}`;
+  } catch (diskError) {
+    console.error("Local resume storage error:", diskError.message);
+    return "";
+  }
+};
+
 const uploadResume = async (req, res) => {
   try {
     const { file } = req;
-    const { id } = req.params;
-    console.log("id", req.params.id);
 
-    // Upload file to S3
-    const uploadParams = {
-      Bucket: process.env.AWSS_BUCKET_NAME,
-      Key: `resume/${req.body.fullName}_${file.originalname}`,
-      Body: file.buffer,
-    };
+    // Resilient resume file upload
+    const resumeLocation = await saveResumeFile(file, req.body.fullName);
 
-    const uploadResult = await s3.upload(uploadParams).promise();
+    // Normalize skills
+    let skillsList = [];
+    if (Array.isArray(req.body.skills)) {
+      skillsList = req.body.skills;
+    } else if (typeof req.body.skills === "string" && req.body.skills.trim()) {
+      skillsList = req.body.skills
+        .split(",")
+        .map((s) => s.trim())
+        .filter(Boolean);
+    }
+
+    const candidateCategory = req.body.candidateCategory || "Experienced";
+    const applicationType =
+      req.body.applicationType || (req.body.jobId ? "job_specific" : "general");
 
     // Create new consultancy document
     const newConsultancy = new Consultancy({
-      employeeNumber: req.body.employeeNumber,
+      candidateCategory,
+      applicationType,
+      jobId: req.body.jobId || null,
+      jobTitle: req.body.jobTitle || "",
+      employeeNumber: req.body.employeeNumber || "",
       fullName: req.body.fullName,
       email: req.body.email,
       mobileNumber: req.body.mobileNumber,
-      tenthPercentage: req.body.tenthPercentage,
-      twelthPercentage: req.body.twelthPercentage,
-      twelthCollegeName: req.body.twelthCollegeName,
-      diplomaPercentage: req.body.diplomaPercentage,
-      degreePercentage: req.body.degreePercentage,
-      diplomaCollegeName: req.body.diplomaCollegeName,
-      degreeName: req.body.degreeName,
-      degreeCollegeName: req.body.degreeCollegeName,
-      yearOfPassing: req.body.yearOfPassing,
-      skills: req.body.skills,
-      yearsOfExperience: req.body.yearsOfExperience,
-      workStatus: req.body.workStatus,
-      referredBy: req.body.referredBy,
-      extraInformation: req.body.extraInformation,
-      englishSpeaking: req.body.englishSpeaking,
-      englishWriting: req.body.englishWriting,
-      mockInterviewDate: req.body.mockInterviewDate,
-      mockInterviewTime: req.body.mockInterviewTime,
-      resumeUrl: uploadResult.Location,
+      primarySkill: req.body.primarySkill || "",
+      yearsOfExperience:
+        req.body.yearsOfExperience || req.body.totalExperience || "",
+      relevantExperience: req.body.relevantExperience || "",
+      currentLocation: req.body.currentLocation || "",
+      preferredLocation: req.body.preferredLocation || "",
+      preferredWorkMode: req.body.preferredWorkMode || "",
+      noticePeriod: req.body.noticePeriod || "",
+      linkedIn: req.body.linkedIn || "",
+      currentCTC: req.body.currentCTC || "",
+      expectedCTC: req.body.expectedCTC || "",
+      highestQualification: req.body.highestQualification || "",
+      graduationYear: req.body.graduationYear || "",
+      internshipDetails: req.body.internshipDetails || "",
+      tenthPercentage: req.body.tenthPercentage
+        ? Number(req.body.tenthPercentage)
+        : undefined,
+      twelthPercentage: req.body.twelthPercentage
+        ? Number(req.body.twelthPercentage)
+        : undefined,
+      twelthCollegeName: req.body.twelthCollegeName || "",
+      diplomaPercentage: req.body.diplomaPercentage
+        ? Number(req.body.diplomaPercentage)
+        : undefined,
+      degreePercentage: req.body.degreePercentage
+        ? Number(req.body.degreePercentage)
+        : undefined,
+      diplomaCollegeName: req.body.diplomaCollegeName || "",
+      degreeName: req.body.degreeName || "",
+      degreeCollegeName: req.body.degreeCollegeName || "",
+      yearOfPassing: req.body.yearOfPassing
+        ? Number(req.body.yearOfPassing)
+        : undefined,
+      skills: skillsList,
+      workStatus:
+        req.body.workStatus ||
+        (candidateCategory === "Fresher" ? "Fresher" : "Experience"),
+      referredBy: req.body.referredBy || "",
+      extraInformation: req.body.extraInformation || "",
+      englishSpeaking: req.body.englishSpeaking || "",
+      englishWriting: req.body.englishWriting || "",
+      mockInterviewDate: req.body.mockInterviewDate || "",
+      mockInterviewTime: req.body.mockInterviewTime || "",
+      resumeUrl: resumeLocation,
+      privacyConsent:
+        req.body.privacyConsent === "true" || req.body.privacyConsent === true,
+      status: "Submitted",
     });
 
     await newConsultancy.save();
-    // console.log(newConsultancy);
-    // console.log(newConsultancy._id);
-    // console.log(object);
-    const applicationLink = `${process.env.WEBSITE_URL}singleApplication/${newConsultancy._id}`;
 
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: req.body.email,
-      subject: "Resume Submission Confirmation",
-      html: `
-        <html xmlns="http://www.w3.org/1999/xhtml">
-          <head>
-            <meta http-equiv="content-type" content="text/html; charset=utf-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0;">
-            <meta name="format-detection" content="telephone=no"/>
-            <style>
-              body {
-                margin: 0;
-                padding: 0;
-                min-width: 100%;
-                width: 100% !important;
-                height: 100% !important;
-                background-color: #ffffff;
-                color: #000000;
-                font-family: Arial, sans-serif;
-              }
-              table {
-                border-collapse: collapse;
-                width: 100%;
-              }
-              td {
-                padding: 20px;
-              }
-              .container {
-                max-width: 600px;
-                margin: 20px auto;
-                padding: 20px;
-                background-color: #ffffff;
-                border-radius: 10px;
-                box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-              }
-              .header {
-                text-align: center;
-                padding-bottom: 20px;
-              }
-              .header img {
-                max-width: 200px;
-                height: auto;
-                border-radius:8px;
-              }
-              .content {
-                font-size: 16px;
-                line-height: 1.6;
-              }
-              .content p {
-                margin-bottom: 20px;
-              }
-              .content a {
-                color: #007bff;
-                text-decoration: underline;
-              }
-              .footer {
-                margin-top: 20px;
-                text-align: right;
-                font-style: italic;
-                color: #777777;
-              }
-            </style>
-            <title>Resume Submission Confirmation</title>
-          </head>
-          <body>
-            <table class="container">
-              <tr>
-                <td class="header">
-                  <a href="https://www.tekisky.com">
-                  <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
-                  </a>
-                </td>
-              </tr>
-              <tr>
-                <td class="content">
-                  <h4 style="color: #007bff; text-align: center;">Resume Submission Confirmation</h4>
-                  <p>Dear ${req.body.fullName},</p>
-                  <p>Thank you for submitting your resume to Tekisky Pvt Ltd. We appreciate your interest in exploring career opportunities with us.</p>
-                  <p>Your resume has been successfully submitted to our database. Our team will review your profile and keep it on file for future reference.</p>
-                  <p>Please note that if we have any requirements from other companies that match your profile, we may contact you for further discussion.</p>
-                  <p>In the meantime, feel free to explore our <a href="https://www.tekisky.com">Tekisky Pvt Ltd</a> to learn more about Tekisky Pvt Ltd and the services we offer.</p>
-                  <p>Thank you once again for considering Tekisky Pvt Ltd as a potential platform for your career growth.</p>
-                </td>
-              </tr>
-              <div style="text-align: center; margin-top: 20px;">
-              <a href="${applicationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">View Your Application</a>
+    const applicationLink = `${process.env.WEBSITE_URL || "https://tekisky.com/"}singleApplication/${newConsultancy._id}`;
+
+    // Safely attempt email notifications without failing candidate submission if SMTP is misconfigured
+    try {
+      if (process.env.SMTP_USER && process.env.SMTP_PASS) {
+        await transporter.sendMail({
+          from: process.env.SMTP_USER,
+          to: req.body.email,
+          subject: "Tekisky Recruitment - Profile Submission Confirmation",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #e2e8f0; border-radius: 8px;">
+              <h2 style="color: #0092d5; text-align: center;">Tekisky Pvt Ltd · Recruitment Portal</h2>
+              <p>Dear ${req.body.fullName},</p>
+              <p>Thank you for submitting your application to Tekisky Pvt Ltd. We have received your professional profile${
+                newConsultancy.jobTitle
+                  ? ` for the role: <strong>${newConsultancy.jobTitle}</strong>`
+                  : ""
+              }.</p>
+              <p>Your Application Reference ID is: <strong>${newConsultancy._id}</strong></p>
+              <p>Our recruitment team reviews your skills and experience against relevant client mandates. If a suitable match is available, our talent team will contact you directly for next steps.</p>
+              <p style="margin-top: 20px; font-size: 13px; color: #64748b;">Notice: Registration does not guarantee an interview or job placement. Candidates will be contacted when a suitable opportunity is available.</p>
+              <hr style="margin: 20px 0; border: none; border-top: 1px solid #e2e8f0;" />
+              <p style="font-size: 12px; color: #94a3b8; text-align: center;">Tekisky Pvt Ltd · Career Opportunities Portal</p>
             </div>
-              <tr>
-                <td class="footer">
-                  Best Regards,<br>
-                  The Recruitment Team<br>
-                  Tekisky Pvt Ltd <br>
-                  <a href="mailto:hr@tekisky.com">hr@tekisky.com</a><br>
-                  <a href="tel:+918625817334">+91 8625817334</a>
+          `,
+        });
+      }
+    } catch (mailErr) {
+      console.warn("Candidate email delivery skipped/failed:", mailErr.message);
+    }
 
-                </td>
-              </tr>
-            </table>
-          </body>
-        </html>
-      `,
+    return res.status(200).json({
+      message: "Application submitted successfully",
+      applicationId: newConsultancy._id,
+      applicationType: newConsultancy.applicationType,
+      jobTitle: newConsultancy.jobTitle || "",
+      candidateCategory: newConsultancy.candidateCategory,
     });
-
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: process.env.SMTP_USER,
-      subject: "📥 New Resume Uploaded: Review Now! 📝",
-      html: `
-          <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);">
-         
-                  <a href="https://www.tekisky.com">
-                  <h2 style="color: #007bff; text-align: center;">Tekisky Pvt Ltd</h2>
-                  </a>
-               
-            <h2 style="color: #007bff; text-align: center;">New Resume Uploaded</h2>
-            <p style="margin-bottom: 10px;"><strong>Student Name:</strong> ${req.body.fullName}</p>
-            <p style="margin-bottom: 10px;"><strong>Email:</strong> ${req.body.email}</p>
-            <p style="margin-bottom: 10px;"><strong>Mobile Number:</strong> ${req.body.mobileNumber}</p>
-            <p><strong>Resume Preview:</strong></p>
-            <p>Click <a href="${uploadResult.Location}" target="_blank">here</a> to view the resume. 📄</p>
-            <div style="text-align: center; margin-top: 20px;">
-            <a href="${applicationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #ffffff; text-decoration: none; border-radius: 5px;">View Application</a>
-          </div>
-          <table style="margin-top: 20px; width: 100%;">
-          <tr>
-            <td class="footer" style="text-align: end;">
-              Best Regards,<br>
-              The Recruitment Team<br>
-              Tekisky Pvt Ltd <br>
-              <a href="mailto:hr@tekisky.com">hr@tekisky.com</a><br>
-              <a href="tel:+918625817334">+91 8625817334</a>
-            </td>
-          </tr>
-        </table>
-          </div>
-        `,
-    });
-
-    res.status(200).json({ message: "Resume uploaded successfully" });
   } catch (error) {
-    console.log(error.message);
-    res.status(500).json({ error: "Failed to upload resume" });
+    console.error("Error in uploadResume:", error.message);
+    return res.status(500).json({ error: "Failed to upload resume" });
   }
 };
 

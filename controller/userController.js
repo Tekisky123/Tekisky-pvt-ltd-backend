@@ -40,24 +40,27 @@ export const createUser = async (req, res) => {
 
 export const loginUser = async (req, res) => {
   try {
-    const secretKey = "test";
-    const decryptedDataBytes = CryptoJS.AES.decrypt(req.body.data, secretKey);
-    const decryptedData = JSON.parse(
-      decryptedDataBytes.toString(CryptoJS.enc.Utf8)
-    );
-
-    const loginData = decryptedData;
+    let loginData;
+    if (req.body.data) {
+      const secretKey = "test";
+      const decryptedDataBytes = CryptoJS.AES.decrypt(req.body.data, secretKey);
+      loginData = JSON.parse(
+        decryptedDataBytes.toString(CryptoJS.enc.Utf8)
+      );
+    } else {
+      loginData = req.body;
+    }
 
     const result = await loginService(loginData);
 
     if (result.success) {
-      res.status(200).json(result);
+      return res.status(200).json(result);
     } else {
-      res.status(401).json({ message: "Invalid credentials" });
+      return res.status(401).json({ message: result.error || "Invalid credentials" });
     }
   } catch (error) {
-    console.error("Error during login:", error);
-    res.status(500).json({ message: "Internal server error" });
+    console.error("Error during login:", error.message);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 

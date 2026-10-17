@@ -34,6 +34,10 @@ app.use("/email", sendEmailRoute);
 app.use("/selectedStudent", selectedStudentRoute);
 app.use("/user", userRoute);
 app.use("/consultancy", consultancyRoute);
+app.use("/api/admin", userRoute);
+app.use("/api", consultancyRoute);
+app.use("/uploads", express.static("uploads"));
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

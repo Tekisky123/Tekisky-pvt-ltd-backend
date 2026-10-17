@@ -51,35 +51,46 @@ export const createUserService = async (userData) => {
 
 export const loginService = async (loginData) => {
   try {
-    const { mobileNumber, password } = loginData;
+    const { mobileNumber, email, identifier, password } = loginData;
+    const loginIdentifier = (email || mobileNumber || identifier || "").trim();
 
     // Validate login data
-    if (!mobileNumber || !password) {
-      throw new Error("Mobile number and password are required");
+    if (!loginIdentifier || !password) {
+      throw new Error("Email / Mobile number and password are required");
     }
 
-    // Find the user by mobile number
-    const user = await UserModel.findOne({ mobileNumber });
+    // Find the user by mobile number or email (case-insensitive)
+    const user = await UserModel.findOne({
+      $or: [
+        { mobileNumber: loginIdentifier },
+        { email: loginIdentifier.toLowerCase() },
+        { email: new RegExp(`^${loginIdentifier.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "i") },
+      ],
+    });
 
     // Check if the user exists
     if (!user) {
-      throw new Error("Invalid mobile number or password");
+      throw new Error("Invalid email/mobile number or password");
     }
 
     // Compare the provided password with the stored hashed password
     const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid mobile number or password");
+      throw new Error("Invalid email/mobile number or password");
     }
 
-    // Generate a JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET_KEY, {
-      expiresIn: "1d",
-    });
+    // Generate a JWT token including user role
+    const token = jwt.sign(
+      { userId: user._id, userType: user.userType, email: user.email },
+      process.env.JWT_SECRET_KEY,
+      {
+        expiresIn: "7d",
+      }
+    );
 
     // Include userType and collegeName in the response
-    const { userType, collegeName } = user;
+    const { userType, collegeName, fullName } = user;
 
     return {
       success: true,
@@ -87,6 +98,7 @@ export const loginService = async (loginData) => {
       token,
       user: {
         _id: user._id,
+        fullName,
         mobileNumber: user.mobileNumber,
         email: user.email,
         userType,
@@ -96,7 +108,7 @@ export const loginService = async (loginData) => {
       collegeName,
     };
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error("Error during login:", error.message);
     return { success: false, error: error.message || "Internal Server Error" };
   }
 };

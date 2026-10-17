@@ -8,10 +8,36 @@ import {
   submitAssessment,
   uploadResume,
 } from "../controller/consultancyController.js";
+import {
+  getJobs,
+  getJobById,
+  getAdminJobs,
+  createJob,
+  updateJob,
+  patchJobStatus,
+  deleteJob,
+} from "../controller/jobController.js";
 import multer from "multer";
-import authenticateToken from "../authentication/userAuth.js";
+import authenticateToken, { requireAdmin } from "../authentication/userAuth.js";
 
 const consultancyRoute = express.Router();
+
+// Public Job Vacancy Endpoints (Published, active vacancies only)
+consultancyRoute.get("/jobs", getJobs);
+consultancyRoute.get("/jobs/:id", getJobById);
+
+// Admin-Managed Job Recruitment Endpoints (Authorized admin only)
+consultancyRoute.get("/admin/jobs", authenticateToken, requireAdmin, getAdminJobs);
+consultancyRoute.post("/admin/jobs", authenticateToken, requireAdmin, createJob);
+consultancyRoute.put("/admin/jobs/:id", authenticateToken, requireAdmin, updateJob);
+consultancyRoute.patch("/admin/jobs/:id/status", authenticateToken, requireAdmin, patchJobStatus);
+consultancyRoute.delete("/admin/jobs/:id", authenticateToken, requireAdmin, deleteJob);
+
+// Backwards-compatible aliases for admin operations
+consultancyRoute.post("/jobs", authenticateToken, requireAdmin, createJob);
+consultancyRoute.put("/jobs/:id", authenticateToken, requireAdmin, updateJob);
+consultancyRoute.delete("/jobs/:id", authenticateToken, requireAdmin, deleteJob);
+
 
 const fileFilter = (req, file, cb) => {
   if (
